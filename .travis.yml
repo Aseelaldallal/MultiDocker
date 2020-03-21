@@ -2,35 +2,16 @@ sudo: required
 services:
   - docker
 
-# We'll make an image out of the development dockerfile. We're using development dockerfile because we
-# only get access to test suites when we have all dependencies attached to project. THe production dockerfile
-# installs dependencies and then copies over just the very raw production version of our assets. I.e, it does not
-# allow us to run any tests
-# Remember: When talking about Docker builds, context means the source directory used when building the container.
-# That is why we specify ./client
 before_install:
   - docker build -t aseel/react-test -f ./client/Dockerfile.dev ./client
-# if you had other images you want to run tests for, add another build instruction here
 
-# Contain all different commands that need to be executed to run our test suite - Primary test running section
-# Travis will be watching output of each command, and if the return status code is not 0, it'll assume that
-# our code is broken.
-# Gotcha: Travis assumes that tests run and exit. But npm run test doesn't exit, it waits for input. That is why
-# we add CI=true
 script:
   - docker run -e CI=true aseel/react-test npm run test
-# Add docker run myotherproject to run other tests
 
-# Add configuration that builds production version of our project then push them off to docker hub
 after_success:
-  # Build images using production dockerfiles
-  - docker build -t aseel/multi-client ./client # Remember, production, using default docker file
+  - docker build -t aseel/multi-client ./client
   - docker build -t aseel/multi-nginx ./nginx
   - docker build -t aseel/multi-server ./server
   - docker build -t aseel/multi-worker ./worker
-  # Login to docker cli: We don't want to go through multistep wizard that docker presents you with. We want to do it in one
-  # command. So echo "$DOCKER_PASSWORD" is going to retrieve password from environment variable and emit that over stdin as input
-  # to the next command.
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  # Take images and push to docker hub
   - docker push aseel/multi-client
