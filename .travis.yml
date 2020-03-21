@@ -33,4 +33,4 @@ after_success:
   # to the next command.
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # Take images and push to docker hub
-  - docker push aseel/multi-client aseel/multi-nginx aseel/multi-server aseel/multi-worker
+  - docker push aseel/multi-client
