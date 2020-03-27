@@ -11,7 +11,7 @@ function App() {
       <div className="App">
         <header>
           <Link to="/"> Home </Link>
-          <Link to="/otherpage"> OtherPages </Link>
+          <Link to="/otherpage"> OtherPages! </Link>
         </header>
         <hr />
         <div>
